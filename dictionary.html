@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Välkki-Örival — Complete Dictionary</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Inter:wght@300;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0a0e17;--text:#d8e0e8;--accent:#ff8c6e;--glow:rgba(255,140,110,0.15);--card:#0f141a;--border:rgba(255,140,110,0.2);}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:linear-gradient(135deg,#0a0e17 0%,#1a0f1f 70%,#2b1820 100%);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;padding:2rem 1rem;line-height:1.8;}
+    header{text-align:center;padding-top:2rem;margin-bottom:4rem;}
+    h1{font-family:'Cormorant Garamond',serif;font-size:4.2rem;font-weight:300;color:#fff;}
+    h1 span{color:var(--accent);}
+    nav a{color:#ffb19a;text-decoration:none;margin:0 1.5rem;position:relative;font-weight:500;}
+    nav a::after{content:'';position:absolute;bottom:-6px;left:50%;width:0;height:2px;background:var(--accent);transition:all .3s;transform:translateX(-50%);}
+    nav a:hover::after{width:100%;}nav a:hover{color:white;}
+
+    .controls{max-width:900px;margin:0 auto 2rem;display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;align-items:center;}
+    input[type=text]{padding:.75rem 1rem;background:rgba(255,255,255,0.08);border:1px solid rgba(255,140,110,0.3);border-radius:8px;color:white;width:300px;font-size:1rem;}
+    .toggle-btn{background:var(--accent);color:#000;border:none;padding:.75rem 1.5rem;border-radius:8px;font-weight:600;cursor:pointer;transition:all .3s;}
+    .toggle-btn:hover{background:#ffd1c5;transform:translateY(-2px);}
+
+    table{width:100%;max-width:1000px;margin:0 auto;border-collapse:separate;border-spacing:0 8px;font-size:0.98rem;}
+    thead th{background:var(--card);color:var(--accent);padding:1rem;text-align:left;font-weight:600;position:sticky;top:0;z-index:10;}
+    tbody tr{background:var(--card);transition:all .4s;}
+    tbody tr:hover{background:var(--glow);transform:translateY(-2px);}
+    td{padding:1rem;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+    td:first-child{border-left:1px solid var(--border);border-radius:8px 0 0 8px;}
+    td:last-child{border-right:1px solid var(--border);border-radius:0 8px 8px 0;}
+    .word{font-weight:600;color:var(--accent);font-size:1.1em;}
+    .pos{color:#ffad94;font-weight:500;}
+    .ipa{font-family:"Courier New",monospace;color:#a3f3ff;font-size:0.95em;}
+
+    /* ←←← NEW PRETTY NSFW FILTER ←←← */
+    .nsfw{opacity:0.28;filter:blur(6px);transition:all .5s ease;}
+    .nsfw.visible{opacity:1;filter:none;}
+
+    footer{margin-top:6rem;text-align:center;color:#8899aa;padding:2rem 0;}
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Välkki-<span>Örival</span></h1>
+  <nav>
+    <a href="index.html">Overview</a>
+    <a href="dictionary.html">Dictionary</a>
+    <a href="grammar.html">Grammar</a>
+  </nav>
+</header>
+
+<div class="controls">
+  <input type="text" id="search" placeholder="Search anything…">
+  <button class="toggle-btn" id="toggleNSFW">NSFW: Hidden</button>
+</div>
+
+<table id="dictionary">
+  <thead>
+    <tr><th>Word</th><th>Part of Speech</th><th>Meaning</th><th>Pronunciation</th><th>IPA / Notes</th></tr>
+  </thead>
+  <tbody id="entries"></tbody>
+</table>
+
+<footer>
+  <p>© 2025 Frost Fox Shot — Välkki-Örival Conlang. Born under the Southern Cross.</p>
+</footer>
+
+<script>
+  const tbody = document.getElementById('entries');
+  const searchInput = document.getElementById('search');
+  const toggleBtn = document.getElementById('toggleNSFW');
+  let entries = [];
+  let nsfwVisible = false;
+
+  fetch('dictionary.json')
+    .then(r => r.json())
+    .then(data => {
+      entries = data;
+      render();
+    });
+
+  function render() {
+    tbody.innerHTML = '';
+    const term = searchInput.value.toLowerCase();
+
+    entries
+      .filter(e => !term || JSON.stringify(e).toLowerCase().includes(term))
+      .forEach(e => {
+        const tr = document.createElement('tr');
+        if (e.nsfw) tr.classList.add('nsfw');
+        if (nsfwVisible && e.nsfw) tr.classList.add('visible');
+
+        tr.innerHTML = `
+          <td class="word" data-label="Word">${e.word}</td>
+          <td class="pos" data-label="POS">${e.pos}</td>
+          <td data-label="Meaning">${e.meaning}</td>
+          <td data-label="Pronunciation">${e.pron}</td>
+          <td class="ipa" data-label="IPA">${e.ipa}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+  }
+
+  searchInput.addEventListener('input', render);
+
+  toggleBtn.addEventListener('click', () => {
+    nsfwVisible = !nsfwVisible;
+    document.querySelectorAll('.nsfw').forEach(r => r.classList.toggle('visible', nsfwVisible));
+    toggleBtn.textContent = nsfwVisible ? 'NSFW: Visible' : 'NSFW: Hidden';
+    toggleBtn.style.background = nsfwVisible ? '#e65c3a' : '#ff8c6e';
+  });
+</script>
+</body>
+</html>

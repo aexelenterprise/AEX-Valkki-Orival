@@ -1,175 +1,229 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Välkki-Örival Dictionary</title>
-<style>
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f5f5f5;
-    margin: 0;
-    padding: 20px;
-    color: #333;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Välkki-Örival — Home</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Inter:wght@300;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2240%22 fill=%22%23ff8c6e%22/%3E%3Ctext x=%2250%22 y=%2260%22 font-size=%2280%22 text-anchor=%22middle%22 fill=%22%230a0e17%22%3EStar%3C/text%3E%3C/svg%3E">
 
-  h1, h2 {
-    text-align: center;
-    color: #2c3e50;
-    margin: 5px 0;
-  }
-
-  h2 {
-    font-size: 1.2em;
-    color: #555;
-    font-style: italic;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #fff;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    margin-top: 30px;
-  }
-
-  th, td {
-    border: 1px solid #ddd;
-    padding: 12px 15px;
-    text-align: left;
-  }
-
-  th {
-    background-color: #34495e;
-    color: #fff;
-    font-size: 1em;
-    text-transform: uppercase;
-  }
-
-  tr:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-
-  tr:hover {
-    background-color: #e8f0fe;
-  }
-
-  .pronunciation {
-    font-style: italic;
-    color: #555;
-  }
-
-  .description {
-    max-width: 400px;
-  }
-
-  @media (max-width: 600px) {
-    th, td {
-      font-size: 14px;
-      padding: 8px;
+  <!-- Lazy-load grammar only when generating TXT -->
+  <script>
+    let grammarLoaded = false;
+    async function ensureGrammar() {
+      if (!grammarLoaded && !window.grammarSections) {
+        await fetch('grammar-data.js?' + Date.now())
+          .then(r => r.text())
+          .then(code => eval(code));
+        grammarLoaded = true;
+      }
     }
+  </script>
 
-    .description {
-      max-width: 200px;
-    }
-  }
-</style>
+  <style>
+    :root{--bg:#0a0e17;--text:#d8e0e8;--accent:#ff8c6e;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:linear-gradient(135deg,#0a0e17 0%,#1a0f1f 70%,#2b1820 100%);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;position:relative;}
+    header{position:relative;padding:5rem 1rem 4rem;text-align:center;color:white;}
+    #maintenanceBanner{position:fixed;top:0;left:0;right:0;background:#ff3b5c;color:white;padding:14px 20px;text-align:center;font-weight:700;font-size:1.25rem;z-index:9999;cursor:pointer;box-shadow:0 6px 30px rgba(255,59,92,0.6);text-transform:uppercase;letter-spacing:1px;animation:pulse 2s infinite;transform:translateY(-100%);transition:transform .5s cubic-bezier(0.68,-.55,.27,1.55);}
+    #maintenanceBanner.show{transform:translateY(0);}
+    @keyframes pulse{0%,100%{box-shadow:0 6px 30px rgba(255,59,92,.6);}50%{box-shadow:0 10px 50px rgba(255,59,92,.9);}}
+    #maintenancePopup{position:fixed;inset:0;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;z-index:9999;opacity:0;visibility:hidden;transition:all .4s;}
+    #maintenancePopup.show{opacity:1;visibility:visible;}
+    .popup-content{background:#1a0f1f;border:3px solid #ff3b5c;border-radius:16px;padding:2.5rem;max-width:500px;text-align:center;color:#ffccdd;}
+    .popup-content h3{font-size:2rem;margin-bottom:1rem;color:#ff3b5c;}
+    .popup-content pre{white-space:pre-wrap;text-align:left;background:rgba(255,59,92,.15);padding:1.2rem;border-radius:10px;margin:1rem 0;}
+    .stars{position:absolute;inset:0;background:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%221%22 fill=%22white%22 opacity=%220.8%22/><circle cx=%2230%22 cy=%2270%22 r=%221.5%22 fill=%22white%22 opacity=%220.9%22/><circle cx=%2270%22 cy=%2260%22 r=%221%22 fill=%22white%22 opacity=%220.7%22/></svg>') repeat;background-size:120px;opacity:.15;animation:twinkle 8s infinite alternate;}
+    @keyframes twinkle{0%,100%{opacity:.1}50%{opacity:.2}}
+    .title-container{height:160px;position:relative;overflow:hidden;margin:2rem 0;}
+    .title-slide{position:absolute;width:100%;left:0;top:0;font-family:'Cormorant Garamond',serif;font-size:6.8rem;font-weight:300;opacity:0;transform:translateY(60px);animation:slideUp 12s infinite;}
+    .title-slide:nth-child(1){animation-delay:0s;}
+    .title-slide:nth-child(2){animation-delay:6s;}
+    .title-slide span{color:var(--accent);}
+    @keyframes slideUp{0%{opacity:0;transform:translateY(60px);}8%{opacity:1;transform:translateY(0);}42%{opacity:1;transform:translateY(0);}50%{opacity:0;transform:translateY(-50px);}100%{opacity:0;}}
+    .subtitle{font-size:1.5rem;opacity:.9;margin:2rem 0 3rem;}
+    nav a{color:#ffb19a;text-decoration:none;margin:0 2rem;font-weight:500;position:relative;}
+    nav a::after{content:'';position:absolute;bottom:-8px;left:50%;width:0;height:2px;background:var(--accent);transition:.3s;transform:translateX(-50%);}
+    nav a:hover::after{width:100%;}nav a:hover{color:white;}
+    main{max-width:1100px;margin:4rem auto;padding:0 2rem;flex:1;}
+    .buttons{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2rem;margin-top:3rem;}
+    .btn{background:var(--accent);color:#000;padding:1.4rem;border:none;border-radius:14px;font-size:1.2rem;font-weight:600;cursor:pointer;transition:all .3s;box-shadow:0 10px 30px rgba(255,140,110,.4);}
+    .btn:hover{transform:translateY(-10px);box-shadow:0 20px 40px rgba(255,140,110,.55);}
+    .btn.legacy{background:#6b3e5e;color:#ffccdd;}
+    .btn.txt{background:#3e6b5e;color:#ccffdd;}
+    #toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.9);color:white;padding:16px 40px;border-radius:50px;font-size:1.05rem;z-index:9999;opacity:0;visibility:hidden;transition:all .4s;}
+    #toast.show{opacity:1;visibility:visible;bottom:40px;}
+    #toast::after{content:'';position:absolute;bottom:0;left:0;height:5px;width:0%;background:var(--accent);border-radius:50px;animation:load 1.6s linear;}
+    @keyframes load{0%{width:0%}100%{width:100%}}
+    footer{margin-top:auto;padding:3rem;text-align:center;color:#8899aa;background:rgba(0,0,0,.3);}
+    .zulu{font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:#ffad94;margin-top:.8rem;}
+  </style>
 </head>
 <body>
 
-<h1>Välkki-Örival</h1>
-<h2>val-kee or-ee-val</h2>
+<div id="maintenanceBanner">UNDER ACTIVE LOVE — EXPECT BUGS & SUDDEN UPDATES — CLICK ME</div>
+<div id="maintenancePopup">
+  <div class="popup-content">
+    <h3>Work in Progress!</h3>
+    <pre id="popupMessage"></pre>
+    <button class="btn" style="margin-top:1rem;background:#ff3b5c;" onclick="document.getElementById('maintenancePopup').classList.remove('show')">Got it!</button>
+  </div>
+</div>
 
-<table>
-  <thead>
-    <tr>
-      <th>Word</th>
-      <th>Part of Speech</th>
-      <th>Meaning / Description</th>
-      <th>Pronunciation</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>jś</td>
-      <td>vërb</td>
-      <td class="description">Linking verb, equivalent to "is," "am," or "are."</td>
-      <td class="pronunciation">yeizz</td>
-    </tr>
-    <tr>
-      <td>nä</td>
-      <td>prönoun</td>
-      <td class="description">First-person singular, "I."</td>
-      <td class="pronunciation">nah</td>
-    </tr>
-    <tr>
-      <td>oôshkey</td>
-      <td>prönoun</td>
-      <td class="description">First-person plural, "we."</td>
-      <td class="pronunciation">oosh-kay</td>
-    </tr>
-    <tr>
-      <td>säe</td>
-      <td>prönoun</td>
-      <td class="description">Second-person plural "you" or third-person plural "they/them."</td>
-      <td class="pronunciation">sah-eh</td>
-    </tr>
-    <tr>
-      <td>malf</td>
-      <td>prönoun</td>
-      <td class="description">Male person, "man/he/guy."</td>
-      <td class="pronunciation">malf</td>
-    </tr>
-    <tr>
-      <td>wôlt</td>
-      <td>prönoun</td>
-      <td class="description">Female person, "woman/her/girl."</td>
-      <td class="pronunciation">walt</td>
-    </tr>
-    <tr>
-      <td>wee-rär</td>
-      <td>phräse</td>
-      <td class="description">"Love you."</td>
-      <td class="pronunciation">wee rahr</td>
-    </tr>
-    <tr>
-      <td>däi-dën</td>
-      <td>adj./phräse</td>
-      <td class="description">Feeling horny, flustered, or overwhelmed by attraction.</td>
-      <td class="pronunciation">die den</td>
-    </tr>
-    <tr>
-      <td>pöôt</td>
-      <td>adj.</td>
-      <td class="description">Good</td>
-      <td class="pronunciation">poot</td>
-    </tr>
-    <tr>
-      <td>nyïtz</td>
-      <td>adj.</td>
-      <td class="description">Bad</td>
-      <td class="pronunciation">nyeets</td>
-    </tr>
-    <tr>
-      <td>flöötz</td>
-      <td>nöun</td>
-      <td class="description">Furry</td>
-      <td class="pronunciation">flootz</td>
-    </tr>
-    <tr>
-      <td>hai-ëe</td>
-      <td>greeting</td>
-      <td class="description">Hello</td>
-      <td class="pronunciation">hi-ee</td>
-    </tr>
-    <tr>
-      <td>wïeder-luft</td>
-      <td>greeting</td>
-      <td class="description">Bye</td>
-      <td class="pronunciation">vee-der luft</td>
-    </tr>
-  </tbody>
-</table>
+<header>
+  <div class="stars"></div>
+  <div class="title-container">
+    <div class="title-slide">Välkki-<span>Örival</span></div>
+    <div class="title-slide">Välkki-<span>Häen</span></div>
+  </div>
+  <p class="subtitle">A language born under the Southern Cross — bright, warm, and just a little spicy</p>
+  <nav>
+    <a href="dictionary.html">Dictionary</a>
+    <a href="grammar.html">Grammar</a>
+    <a href="index.html">Home</a>
+  </nav>
+</header>
 
+<main>
+  <div class="buttons">
+    <button class="btn" onclick="location.href='dictionary.html'">Open Dictionary</button>
+    <button class="btn" onclick="location.href='grammar.html'">Open Grammar</button>
+    <button class="btn txt" id="generateTXT">Generate Full TXT</button>
+    <button class="btn legacy" onclick="location.href='grammar-o.html'">
+      Legacy Grammar<br><small>Outdated but works on toasters</small>
+    </button>
+  </div>
+</main>
+
+<div id="toast">Brewing your perfect TXT…</div>
+
+<footer>
+  <p id="footerText">© 2025 Frost Fox Shot — Välkki-Örival Conlang</p>
+  <p class="zulu" id="zuluDate"></p>
+</footer>
+
+<script>
+// Everything now comes from info.json — no hardcoding ever again!
+let info = {
+  version: "1.0.0",
+  lastUpdated: "2025-01-01",
+  author: "Frost Fox Shot",
+  months: ["Sänga","Löna","Däsa","Bäsa","Hlaba","Ngulana","Tukazi","Cwaba","Dulo","Fumfu","Lwezi","Zibandla"],
+  maintenance: false,
+  maintenanceMessage: "The fox is adding sparkles right now~"
+};
+
+fetch('info.json?' + Date.now()) // always fresh
+  .then(r => r.json())
+  .then(data => {
+    info = data;
+    window.languageInfo = info;
+
+    // Update footer
+    document.getElementById('footerText').textContent = `© ${new Date().getFullYear()} ${info.author} — Välkki-Örival Conlang`;
+
+    // Update Zulu date in footer
+    const d = new Date(info.lastUpdated + 'T12:00:00');
+    document.getElementById('zuluDate').textContent = `${d.getDate()} ${info.months[d.getMonth()]} ${d.getFullYear()}`;
+
+    // Maintenance banner
+    if (info.maintenance === true) {
+      document.getElementById('maintenanceBanner').classList.add('show');
+      document.getElementById('maintenanceBanner').onclick = () => {
+        document.getElementById('popupMessage').textContent = info.maintenanceMessage || "The fox is hugging the code right now~";
+        document.getElementById('maintenancePopup').classList.add('show');
+      };
+    }
+  })
+  .catch(() => console.log("info.json not found — using defaults ♡"));
+
+document.getElementById('generateTXT').addEventListener('click', async () => {
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  toast.textContent = 'Loading grammar & brewing your perfect TXT…';
+
+  await ensureGrammar();
+
+  const updated = new Date(info.lastUpdated + 'T12:00:00');
+  const generated = new Date(); generated.setHours(12,0,0,0);
+  const zuluUpdated = `${updated.getDate()} ${info.months[updated.getMonth()]} ${updated.getFullYear()}`;
+  const zuluToday   = `${generated.getDate()} ${info.months[generated.getMonth()]} ${generated.getFullYear()}`;
+
+  let txt = `══════════════════════════════════════════════════════════════
+          VÄLKKI-ÖRIVAL / VÄLKKI-HÄEN
+             Official Reference Document ♡
+══════════════════════════════════════════════════════════════
+
+Version           : ${info.version}
+Last updated      : ${zuluUpdated}
+Generated today   : ${zuluToday}
+Created with love by : ${info.author}
+
+Heart This language is alive and growing — tiny bugs and sudden bursts
+of new words are just proof it’s being hugged a lot right now!
+
+══════════════════════════════════════════════════════════════
+DICTIONARY
+══════════════════════════════════════════════════════════════
+Word                  PoS                    Meaning
+Pronunciation  →  IPA
+──────────────────────────────────────────────────────────────
+`;
+
+  try {
+    const dict = await (await fetch('dictionary.json?' + Date.now())).json();
+    dict.forEach(e => {
+      const word = e.word.padEnd(21);
+      const pos = e.pos.padEnd(22);
+      const meaning = e.meaning;
+      const pronipa = `→ ${e.pron}  → ${e.ipa}`;
+      txt += `${word}${pos}${meaning}\n`;
+      txt += `${" ".repeat(22)}${pronipa}\n\n`;
+    });
+  } catch(e) {
+    txt += "Heart (dictionary.json is shy right now~)\n\n";
+  }
+
+  txt += `══════════════════════════════════════════════════════════════
+GRAMMAR & PHONOLOGY
+══════════════════════════════════════════════════════════════\n\n`;
+
+  if (window.grammarSections && window.grammarSections.length > 0) {
+    window.grammarSections.forEach(sec => {
+      txt += `Heart ${sec.title.toUpperCase()}\n`;
+      txt += `${"─".repeat(sec.title.length + 8)}\n\n`;
+      sec.blocks.forEach(b => {
+        txt += `• ${b.summary}\n`;
+        const clean = b.content.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
+        txt += `  ${clean}\n\n`;
+      });
+      txt += "\n";
+    });
+  } else {
+    txt += "Heart (grammar is taking a little nap~)\n\n";
+  }
+
+  txt += `══════════════════════════════════════════════════════════════
+Thank you for holding this language close to your heart.
+Every “nä wee-rär” makes the stars shine brighter.
+
+nä wee-rär ♡
+
+— ${info.author}
+${zuluToday}
+`;
+
+  const blob = new Blob([txt], {type: 'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Välkki-Örival_v${info.version}_${info.lastUpdated}_official.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+
+  toast.textContent = 'Here’s your perfect, fresh TXT! ♡';
+  setTimeout(() => toast.classList.remove('show'), 3000);
+});
+</script>
 </body>
 </html>
