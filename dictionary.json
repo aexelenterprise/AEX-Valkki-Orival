@@ -1470,5 +1470,14 @@
     "pron": "grohn",
     "ipa": "/ɡroːrn/",
     "nsfw": false
+	},
+	{
+  "word": "rakr",
+  "pos": "Noun",
+  "meaning": "Program, script, or code; a written set of instructions that makes a system perform actions or logic.",
+  "pron": "rak-keer",
+  "ipa": "/ˈræk.kɪɹ/",
+  "nsfw": false
 	}
 ]
+
