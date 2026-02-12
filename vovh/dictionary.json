@@ -1478,6 +1478,24 @@
   "pron": "rak-keer",
   "ipa": "/ˈræk.kɪɹ/",
   "nsfw": false
+	},
+	{
+    "word": "keh",
+    "pos": "Noun",
+    "meaning": "Keyboard; a physical or digital input device used for typing characters, commands, or symbols.",
+    "pron": "keh",
+    "ipa": "/kɛ/",
+    "nsfw": false
+	},
+	{
+    "word": "passa",
+    "pos": "Verb / Noun",
+    "meaning": "To pass; to move beyond, transfer, allow through, or succeed in completion. As a noun: a pass, clearance, or successful attempt.",
+    "pron": "pas-sah",
+    "ipa": "/ˈpɑs.sɑ/",
+    "nsfw": false
 	}
 ]
+
+
 
